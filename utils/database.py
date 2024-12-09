@@ -7,7 +7,7 @@ try:
     connection = pymysql.connect(
         host='localhost',
         user='root',
-        database='DATABASE',
+        database='hospital',
         cursorclass=pymysql.cursors.DictCursor
     )
 except pymysql.Error as err:
@@ -22,15 +22,23 @@ def extractSchema():
             
             tables = cursor.fetchall()
 
-            schema = []
+            result = []
 
             for table in tables:
-                table = list(table.values())[0] # Get table name
-                cursor.execute('SHOW CREATE TABLE ' + table)
-                result = cursor.fetchone()['Create Table']
-                
-                schema.append(re.sub(r" ENGINE.*", "", result))
-            
-            return schema
+                table_name = list(table.values())[0] # Get table name
+                cursor.execute('SHOW CREATE TABLE ' + table_name)
+                schema = cursor.fetchone()['Create Table']
+                cleaned_schema = (re.sub(r" ENGINE.*", "", schema))
+
+                cursor.execute('SELECT * FROM '+ table_name +' LIMIT 3')  
+                rows = cursor.fetchall()
+
+                result.append({  
+                    "table_name": table_name,  
+                    "schema": cleaned_schema,  
+                    "rows": rows  
+                }) 
+
+            return result
         except pymysql.Error as err:
             raise Exception(err)
