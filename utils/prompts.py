@@ -55,3 +55,16 @@ Schema:
 
 Make sure the questions are very short, non-technical, not related to specific doctor.
 Provide only the questions with numbered list."""
+
+PLOTLY_DATAPOINTS = """You're an expert in Plotly.js, the following is a result for user's question in pandas dataframe 'df':
+${df}
+
+**Take this as an example for the output depending on the user's question and choose the best one:**
+For bar plot: {"data":[{"x":["A","B","C","D"],"y":[10,20,30,40],"type":"bar","marker":{"color":"orange"} }],"layout":{"title":"Bar Plot Example","xaxis":{"title":"Categories"},"yaxis":{"title":"Values"} } }
+For scatter plot: {"data":[{"x":[1,2,3,4,5],"y":[2,4,6,8,10],"type":"scatter","mode":"lines","line":{"color":"blue"} }],"layout":{"title":"Line Plot Example","xaxis":{"title":"X-axis"},"yaxis":{"title":"Y-axis"} } }
+For pie plot: {"data":[{"labels":["Apple","Banana","Cherry","Date"],"values":[30,20,40,10],"type":"pie"}],"layout":{"title":"Pie Chart Example"} }
+
+**Use the data of the dataframe to fill the output with values from the dataframe**
+- Only provide a single JSON code that works on Plotly.js.
+- I will use your output for `JSON.parse` *MAKE SURE* the output is a *correct* JSON.
+- Don't explain anything at all."""

@@ -1,9 +1,9 @@
 from classes.Ollama import OllamaClient
 from classes.Groq import GroqClient
 
-from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL
+from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL, PLOTLY_DATAPOINTS
 from utils.database import validateSQL, sqlExecute, extractSchema
-from utils.extractors import sqlExtractor
+from utils.extractors import sqlExtractor, jsonExtractor
 
 import pandas as pd
 from pymysql import Error as sqlError
@@ -66,6 +66,21 @@ def sqlSafeExecute(input, query, schema):
 
         # Call the function again
         return sqlSafeExecute(input, newQuery, schema)
+
+from string import Template
+def generatePlotly(df, query):
+    try:
+        model = GroqClient(model_name="llama-3.1-8b-instant")
+        
+        plotlyJSON = model.generate([
+            { 'role': 'system', 'content': Template(PLOTLY_DATAPOINTS).substitute(df=df) }
+        ])
+
+        return jsonExtractor(plotlyJSON)
+    except Exception as err:
+        print(err)
+        return None
+
 
 def chatbot():
     """
