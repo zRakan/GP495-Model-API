@@ -48,9 +48,10 @@ Previous Question: "PREVIOUS"
 Current Question: "CURRENT"'''
 
 SUGGESTION_QUESTIONS = """You are an expert SQL assistant. Based on the following database schema, generate 4 meaningful SQL questions that a user might ask. 
-The questions should be related to retrieving data, aggregating information, or analyzing relationships between tables, short question.
+The questions should be related to retrieving data, aggregating information, or analyzing relationships between tables.
 
 Schema:
 {schemaText}
 
-Provide only the questions and with numbered list."""
+Make sure the questions are very short, non-technical, not related to specific doctor.
+Provide only the questions with numbered list."""
