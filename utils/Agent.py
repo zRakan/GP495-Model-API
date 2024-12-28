@@ -2,7 +2,7 @@ from classes.Ollama import OllamaClient
 from classes.Groq import GroqClient
 
 from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL
-from utils.database import sqlExecute
+from utils.database import validateSQL, sqlExecute, extractSchema
 from utils.extractors import sqlExtractor
 
 import pandas as pd
@@ -49,10 +49,11 @@ def rewriteQuestion(previous, current):
 
 def sqlSafeExecute(input, query, schema):
     try:
-        result = sqlExecute(query)
-        df = pd.DataFrame(result)
+        if(not validateSQL(query)):
+            raise sqlError('Not `SELECT` SQL')
 
-        return df.to_markdown()
+        result = sqlExecute(query)
+        return result, query
     except sqlError as err:
         model = GroqClient(model_name="llama-3.1-8b-instant")
         
