@@ -20,7 +20,7 @@ class GroqClient:
         """
 
         try:
-            response = self.client.chat.completions.create(model=self.model_name, messages=messages)
+            response = self.client.chat.completions.create(model=self.model_name, messages=cleanedMessages)
             return response.choices[0].message.content
         except Exception as e:
             raise Exception(f"Groq inference error: {str(e)}")

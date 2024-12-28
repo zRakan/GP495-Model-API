@@ -12,7 +12,10 @@ class OllamaClient:
         """
 
         try:
-            response = chat(model=self.model_name, messages=messages)
+            # Clean conversation from non-text messages
+            cleanedMessages = [message for message in messages if 'type' not in message]
+
+            response = chat(model=self.model_name, messages=cleanedMessages)
             return response.message.content
         except Exception as e:
             raise Exception(f"OLlama model error: {str(e)}")
