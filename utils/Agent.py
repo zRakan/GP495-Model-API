@@ -3,6 +3,8 @@ from classes.Groq import GroqClient
 
 from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL
 from utils.database import sqlExecute
+from utils.extractors import sqlExtractor
+
 import pandas as pd
 from pymysql import Error as sqlError
 
@@ -57,6 +59,9 @@ def sqlSafeExecute(input, query, schema):
         newQuery = model.generate([
             { 'role': 'system', 'content': FIX_SQL.format(input=input, err=err, query=query, schema_data=schema) }
         ])
+
+        # Extract SQL from LLM response
+        newQuery = sqlExtractor(newQuery)
 
         # Call the function again
         return sqlSafeExecute(input, newQuery, schema)
