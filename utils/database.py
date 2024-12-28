@@ -37,7 +37,7 @@ def extractSchema():
         except pymysql.Error as err:
             raise Exception(err)
         
-def validate_sql(query):
+def validateSQL(query):
     """
     Validate the structure of an SQL query using sqlparse.
     """
