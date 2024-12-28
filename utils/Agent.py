@@ -28,34 +28,16 @@ def generate_questions(schema):
     except Exception as e:
         raise Exception(f"Llama model error: {str(e)}")
     
-def rewrite_previous_question(conversation_history):
+def rewriteQuestion(previous, current):
     """
     Rewrite the previous question in the conversation history based on the current question.
     """
 
-    if len(conversation_history) <= 2:
-        raise Exception("Not enough conversation history to rewrite the previous question.")
-
-    # Extract the previous and current questions
-    previous_question = None
-    current_question = None
-
-    # Traverse the conversation history to find the last two user questions
-    for message in reversed(conversation_history):
-        if message['role'] == 'user':
-            if current_question is None:
-                current_question = message['content']
-            elif previous_question is None:
-                previous_question = message['content']
-                break
-
-    if not previous_question or not current_question:
-        raise Exception("Could not find both previous and current questions in the conversation history.")
-
     # Use the LlamaModel to rewrite the previous question
     try:
         model = GroqClient(model_name="llama-3.1-8b-instant")
-        rewritten_question = model.rewrite_question(previous_question, current_question)
+
+        rewritten_question = model.rewrite_question(previous, current)
         return rewritten_question
     except Exception as e:
         raise Exception(f"Error rewriting previous question: {str(e)}")
