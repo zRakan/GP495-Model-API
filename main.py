@@ -6,3 +6,4 @@ app = FastAPI()
 @app.get('/')
 async def readSchema():
     return database.extractSchema()
+
