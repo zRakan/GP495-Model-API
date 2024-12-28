@@ -20,6 +20,9 @@ class GroqClient:
         """
 
         try:
+            # Clean conversation from non-text messages
+            cleanedMessages = [message for message in messages if 'type' not in message]
+
             response = self.client.chat.completions.create(model=self.model_name, messages=cleanedMessages)
             return response.choices[0].message.content
         except Exception as e:
