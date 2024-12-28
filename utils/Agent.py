@@ -81,54 +81,51 @@ def generatePlotly(df, query):
         print(err)
         return None
 
+def sendPrompt(conversation, prompt):
+    try:
+        sqlSchema = extractSchema()
 
-def chatbot():
-    """
-    A simple chatbot that uses the Llama model to generate SQL queries based on user input.
-    """
+        model = GroqClient(model_name="llama-3.1-8b-instant")
+        print(f"""Convo: {len(conversation)}""")
 
-    # Initialize the LlamaModel
-    model = OllamaClient(model_name="llama3.2")
+        # Initial interaction
+        if(len(conversation) == 0):
+            conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG="") })
 
-    # Initialize conversation history
-    conversation_history = [
-        { 'role': 'system', 'content': CHAT_SYSTEM }
-    ]
+        # Re-writing user's message (if applicable)
+        if(len(conversation) > 2):
+            previousPrompt = None
+            
+            for message in reversed(conversation):
+                if('type' in message): continue # Ignore non-text messages
 
-    print("Chatbot is ready! Ask your questions about the database.")
-    print("Type 'exit' to quit.\n")
+                if(message['role'] == 'user'):
+                    previousPrompt = message['content']
+                    break
 
-    while True:
-        # Get user input
-        user_input = input("You: ")
-        if user_input.lower() == "exit":
-            print("Goodbye!")
-            break
+            if(previousPrompt is not None):
+                prompt = rewriteQuestion(previousPrompt, prompt)
 
-        # Add the user's input to the conversation history
-        conversation_history.append({ 'role': 'user', 'content': user_input })
+        # Send user's message
+        conversation.append({ 'role': 'user', 'content': prompt })
+        response = model.generate(conversation)
 
-        # Rewrite the previous question only for the second question and beyond
-        if len([msg for msg in conversation_history if msg['role'] == 'user']) > 1:  # Ensure at least two user questions
-            try:
-                # Rewrite the previous question based on the current question
-                rewritten_question = rewrite_previous_question(conversation_history)
-                print(f"Rewritten Previous Question: {rewritten_question}")
-            except Exception as e:
-                print(f"Error rewriting previous question: {str(e)}")
+        # Check for SQL
+        sqlResult, sqlQuery = sqlSafeExecute(prompt, response, sqlSchema)
 
-        # Prepare the prompt for the Llama model
-        # Combine the conversation history into a single prompt
-        prompt = "\n".join([f"{msg['role'].capitalize()}: {msg['content']}" for msg in conversation_history])
+        # Add LLM resposne to the conversation
+        conversation.append({ 'role': 'assistant', 'content': sqlQuery })
 
-        try:
-            # Generate a response using the Llama model
-            response = model.generate(prompt)
+        # Generate Markdown
+        sqlMarkdown = pd.DataFrame(sqlResult).to_markdown()
+        conversation.append({ 'type': 'Markdown', 'role': 'assistant', 'content': sqlMarkdown })
 
-            # Add the chatbot's response to the conversation history
-            conversation_history.append({ 'role': 'assistant', 'content': response })
+        # Generate Plotly
+        sqlPlotly = generatePlotly(sqlMarkdown, prompt)
 
-            # Print the chatbot's response
-            print(response)
-        except Exception as e:
-            print(f"Error: {str(e)}")
+        for plot in sqlPlotly:
+            conversation.append({ 'type': 'Plotly', 'role': 'assistant', 'content': plot })
+
+        return { 'conversation': conversation }
+    except Exception as e:
+        raise Exception(e)
