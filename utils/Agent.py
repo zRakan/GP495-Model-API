@@ -19,8 +19,11 @@ def generate_questions(schema):
     try:
         model = GroqClient(model_name="llama-3.1-8b-instant")
         response = model.generate([{ 'role': 'user', 'content': prompt }])
+        
         questions = response.split("\n")
-        return [q.strip() for q in questions if q.strip()]
+        questions = [q.strip() for q in questions if q.strip()]
+
+        return questions[(1 if len(questions) > 4 else 0):]
 
     except Exception as e:
         raise Exception(f"Llama model error: {str(e)}")
