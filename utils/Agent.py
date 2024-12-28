@@ -3,7 +3,7 @@ from classes.Groq import GroqClient
 
 from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS
 
-def generate_questions(schema):
+def generateQuestions(schema):
     """
     Generate 4 SQL questions based on the database schema using the Llama model.
     """
