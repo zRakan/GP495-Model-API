@@ -11,12 +11,12 @@ def sqlExtractor(message):
     return message
 
 def jsonExtractor(message):
-    matchCodeblock = re.findall(r"```json\n(.*)```", message, re.DOTALL)
+    matchCodeblock = re.findall(r"```json\n(.*?)```", message, re.DOTALL)
     if(matchCodeblock):
-        return matchCodeblock[-1]
+        return matchCodeblock
     
-    matchCodeblock = re.findall(r"```(.*)```", message, re.DOTALL)
+    matchCodeblock = re.findall(r"```(.*?)```", message, re.DOTALL)
     if(matchCodeblock):
-        return matchCodeblock[-1]
+        return matchCodeblock
     
     return message
