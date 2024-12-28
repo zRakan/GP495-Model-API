@@ -1,7 +1,10 @@
 from classes.Ollama import OllamaClient
 from classes.Groq import GroqClient
 
-from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS
+from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL
+from utils.database import sqlExecute
+import pandas as pd
+from pymysql import Error as sqlError
 
 def generateQuestions(schema):
     """
@@ -41,6 +44,22 @@ def rewriteQuestion(previous, current):
         return rewritten_question
     except Exception as e:
         raise Exception(f"Error rewriting previous question: {str(e)}")
+
+def sqlSafeExecute(input, query, schema):
+    try:
+        result = sqlExecute(query)
+        df = pd.DataFrame(result)
+
+        return df.to_markdown()
+    except sqlError as err:
+        model = GroqClient(model_name="llama-3.1-8b-instant")
+        
+        newQuery = model.generate([
+            { 'role': 'system', 'content': FIX_SQL.format(input=input, err=err, query=query, schema_data=schema) }
+        ])
+
+        # Call the function again
+        return sqlSafeExecute(input, newQuery, schema)
 
 def chatbot():
     """

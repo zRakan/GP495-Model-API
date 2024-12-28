@@ -51,3 +51,13 @@ def validate_sql(query):
         return first_token == 'SELECT'
     except Exception as e:
         return False
+
+def sqlExecute(query):
+    try:
+        cursor = connection.cursor()
+        cursor.execute(query)
+        values = cursor.fetchall()
+
+        return values
+    except pymysql.Error as err:
+        raise pymysql.Error(err)
