@@ -117,7 +117,7 @@ def sendPrompt(conversation, prompt):
         conversation.append({ 'role': 'assistant', 'content': sqlQuery })
 
         # Generate Markdown
-        sqlMarkdown = pd.DataFrame(sqlResult).to_markdown()
+        sqlMarkdown = pd.DataFrame(sqlResult).to_markdown(index=False)
         conversation.append({ 'type': 'Markdown', 'role': 'assistant', 'content': sqlMarkdown })
 
         # Generate Plotly
