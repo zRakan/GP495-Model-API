@@ -5,6 +5,11 @@ from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL, PLOTLY_DAT
 from utils.database import validateSQL, sqlExecute, extractSchema
 from utils.extractors import sqlExtractor, jsonExtractor
 
+
+from utils.RAG import getRAG
+from tabulate import tabulate
+import re
+
 import pandas as pd
 from pymysql import Error as sqlError
 
@@ -81,6 +86,16 @@ def generatePlotly(df, query):
         print(err)
         return None
 
+def markdownTable(RAG):
+    rows = [
+        [response.metadata['Question'], response.metadata['SQL']]
+        for response in RAG]
+    headers = ["Question", "SQL"]
+    table = tabulate(rows, headers, tablefmt="github")
+    table = re.sub(r'-+', '-', table , count=2)
+    return table
+
+
 def sendPrompt(conversation, prompt):
     try:
         sqlSchema = extractSchema()
@@ -90,7 +105,7 @@ def sendPrompt(conversation, prompt):
 
         # Initial interaction
         if(len(conversation) == 0):
-            conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG="") })
+            conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG=markdownTable(getRAG(prompt))) })
 
         # Re-writing user's message (if applicable)
         if(len(conversation) > 2):
