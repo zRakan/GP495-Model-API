@@ -78,7 +78,7 @@ def generatePlotly(df, query):
         model = GroqClient(model_name="llama-3.1-8b-instant")
         
         plotlyJSON = model.generate([
-            { 'role': 'system', 'content': Template(PLOTLY_DATAPOINTS).substitute(df=df) }
+            { 'role': 'system', 'content': Template(PLOTLY_DATAPOINTS).substitute(df=df, query=query) }
         ])
 
         return jsonExtractor(plotlyJSON)

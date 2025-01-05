@@ -56,26 +56,23 @@ Schema:
 Make sure the questions are very short, non-technical, not related to specific doctor.
 Provide only the questions with numbered list."""
 
-PLOTLY_DATAPOINTS = """You're an expert in Plotly.js, the following is a result for user's question in pandas dataframe 'df':
-${df}
+PLOTLY_DATAPOINTS = """You're an expert in Plotly.js, your job is to convert user's question to a plot in plotly.js
 
-**Take this as an example for the output depending on the user's question and choose the best one:**
-For bar plot:
+<user_question>
+${query}
+</user_question>
+
+<data_frame>
+${df}
+</data_frame>
+
+**Take this as an example for the output depending on <user_question> and choose the best one:**
+- Bar Plot:
 ```json
 {
   "data": [{
-    "x": [
-      "A",
-      "B",
-      "C",
-      "D"
-    ],
-    "y": [
-      10,
-      20,
-      30,
-      40
-    ],
+    "x": ["A", "B", "C", "D"],
+    "y": [10, 20, 30, 40],
     "type": "bar",
     "marker": {
       "color": "orange"
@@ -93,7 +90,7 @@ For bar plot:
 }
 ```
 
-- For scatter plot:
+- Scatter Plot:
 ```json
 {
   "data": [
@@ -114,8 +111,30 @@ For bar plot:
 }
 ```
 
-**Use the data of the dataframe to fill the output with values from the dataframe**
-- Only provide a JSON code that works on Plotly.js.
-- Data should be hardcoded in the JSON itself.
-- I will use your output for `JSON.parse` *MAKE SURE* the output is a *correct* JSON.
-- Don't explain anything at all."""
+- Pie Chart:
+```json
+{
+  "data": [
+    {
+      values: [19, 26, 55],
+      labels: ['Residential', 'Non-Residential', 'Utility'],
+      type: 'pie'
+    }
+  ],
+  
+  "layout": {
+    "title": "Line Plot Example",
+  }
+}
+```
+
+
+**Use the data of the <data_frame> to fill the output with values**
+Use <data_frame> to fill JSON output.
+Only provide a JSON code that works on Plotly.js.
+Data should be hardcoded in JSON itself (NO JavaScript runtime available).
+Your output will be passed to JSON.parse() to convert it to a JavaScript object.
+Make sure it only contains valid JSON.
+Don't put comments in codeblock.
+Make sure anything related to ID should be a string.
+Make sure to put ```json``` codeblock for each JSON."""
