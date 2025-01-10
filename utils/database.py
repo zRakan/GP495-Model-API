@@ -33,7 +33,7 @@ def extractSchema():
                 
                 schema.append(re.sub(r" ENGINE.*", "", result))
             
-            return schema
+            return '\n\n'.join(schema)
         except pymysql.Error as err:
             raise Exception(err)
         

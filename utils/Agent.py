@@ -20,11 +20,8 @@ def generateQuestions(schema):
     if not schema:
         raise Exception("Schema is empty. Cannot generate questions.")
 
-    # Format the schema into a single string
-    schema_text = "\n\n".join(schema)
-
-    # Define the prompt
-    prompt = SUGGESTION_QUESTIONS.format(schemaText=schema_text)
+    # Construct the prompt
+    prompt = SUGGESTION_QUESTIONS.format(schemaText=schema)
 
     try:
         model = GroqClient(model_name="llama-3.1-8b-instant")
