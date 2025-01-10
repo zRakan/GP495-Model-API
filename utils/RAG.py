@@ -7,7 +7,7 @@ CLIENT = QdrantClient(host='localhost', port=6333)
 if(not CLIENT.collection_exists(collection_name=COLLECTION)):
     CLIENT.create_collection(
         collection_name=COLLECTION,
-        vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+        vectors_config={"fast-bge-small-en": VectorParams(size=384, distance=Distance.COSINE)}
     )
 
 def getRAG(input, collection=COLLECTION, limit=10):
