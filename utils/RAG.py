@@ -38,3 +38,10 @@ def getAllDataPoints(collection=COLLECTION):
         dataPoints.extend(documents)
     
     return dataPoints
+
+def addData(document, answer):
+    CLIENT.add(
+        collection_name=COLLECTION,
+        documents=[document],
+        metadata=[{ "query": answer }]
+    )

@@ -60,3 +60,16 @@ async def getDataList():
         return {"data": dataPoints}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+class dataParams(BaseModel):
+    question: str
+    answer: str
+
+@app.post('/addData')
+async def addData(data : dataParams):
+    try:
+        RAG.addData(data.question, data.answer)
+        return { "status": True }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
