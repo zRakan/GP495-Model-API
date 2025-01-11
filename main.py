@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 
 from utils import database
 from utils import Agent
+from utils import RAG
 
 app = FastAPI()
 
@@ -49,5 +50,13 @@ async def generate_questions():
         schema = database.extractSchema()
         questions = Agent.generateQuestions(schema)
         return {"questions": questions}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get('/dataList')
+async def getDataList():
+    try:
+        dataPoints = RAG.getAllDataPoints()
+        return {"data": dataPoints}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

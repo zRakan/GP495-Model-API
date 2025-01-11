@@ -17,3 +17,24 @@ def getRAG(input, collection=COLLECTION, limit=10):
         limit=limit
     )
     return search_result
+
+def getAllDataPoints(collection=COLLECTION):
+    dataPoints = []
+
+    nextCursor = None
+    scrolling = True
+
+    while scrolling:
+        documents, nextCursor = CLIENT.scroll(
+            collection_name=collection,
+            limit=500,
+            offset=nextCursor,
+            with_payload=True,
+            with_vectors=False
+        )
+
+        scrolling = nextCursor is not None
+
+        dataPoints.extend(documents)
+    
+    return dataPoints
