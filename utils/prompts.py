@@ -3,8 +3,6 @@ CHAT_SYSTEM = """You are a MySQL expert. Please help to generate an SQL query to
 # Tables: 
 {schemaData}
 
-# similar question with query
-- This is a similar question with it confirmed SQL query use it to generate a query to meet the user's question
 {RAG}
 
 # Response Guidelines:

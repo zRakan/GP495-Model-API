@@ -85,13 +85,14 @@ def generatePlotly(df, query):
 
 def markdownTable(RAG):
     rows = [
-        [response.metadata['Question'], response.metadata['SQL']]
+        [response.metadata['document'], response.metadata['query']]
         for response in RAG]
     headers = ["Question", "SQL"]
     table = tabulate(rows, headers, tablefmt="github")
     table = re.sub(r'-+', '-', table , count=2)
-    return table
 
+    return f"""# Examples:
+{table}"""
 
 def sendPrompt(conversation, prompt):
     try:
