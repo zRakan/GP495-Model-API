@@ -69,7 +69,19 @@ class dataParams(BaseModel):
 @app.post('/addData')
 async def addData(data : dataParams):
     try:
-        RAG.addData(data.question, data.answer)
-        return { "status": True }
+        id = RAG.addData(data.question, data.answer)
+        return { "id": id }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+class dataParams(BaseModel):
+    id: str
+
+@app.post('/removeData')
+async def removeData(data : dataParams):
+    try:
+        status = RAG.removeData(data.id)
+        return status
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

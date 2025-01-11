@@ -1,5 +1,5 @@
 from qdrant_client import QdrantClient
-from qdrant_client.models import VectorParams, Distance
+from qdrant_client.models import VectorParams, Distance, PointIdsList
 
 COLLECTION = "SQL"
 CLIENT = QdrantClient(host='localhost', port=6333) 
@@ -40,8 +40,14 @@ def getAllDataPoints(collection=COLLECTION):
     return dataPoints
 
 def addData(document, answer):
-    CLIENT.add(
+    return CLIENT.add(
         collection_name=COLLECTION,
         documents=[document],
         metadata=[{ "query": answer }]
+    )
+
+def removeData(id):
+    return CLIENT.delete(
+        collection_name=COLLECTION,
+        points_selector=PointIdsList(points=[id])
     )
