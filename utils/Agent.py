@@ -94,6 +94,15 @@ def markdownTable(RAG):
     return f"""# Examples:
 {table}"""
 
+def listIt(RAG):
+    examples = [
+        f"""question: {response.metadata['document']}\nanswer: {response.metadata['query']}"""
+        for response in RAG
+    ]
+
+    return f"""# Examples:
+{'\n\n'.join(examples)}"""
+
 def sendPrompt(conversation, prompt):
     try:
         sqlSchema = extractSchema()
@@ -103,7 +112,7 @@ def sendPrompt(conversation, prompt):
 
         # Initial interaction
         if(len(conversation) == 0):
-            conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG=markdownTable(getRAG(prompt))) })
+            conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG=listIt(getRAG(prompt))) })
 
         # Re-writing user's message (if applicable)
         if(len(conversation) > 2):
