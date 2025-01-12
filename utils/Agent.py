@@ -95,6 +95,9 @@ def markdownTable(RAG):
 {table}"""
 
 def listIt(RAG):
+    if(len(RAG) == 0):
+        return ""
+
     examples = [
         f"""question: {response.metadata['document']}\nanswer: {response.metadata['query']}"""
         for response in RAG
@@ -112,7 +115,7 @@ def sendPrompt(conversation, prompt):
 
         # Initial interaction
         if(len(conversation) == 0):
-            conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG=listIt(getRAG(prompt))) })
+            conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG=listIt(getRAG(prompt, score=0.85))) })
 
         # Re-writing user's message (if applicable)
         if(len(conversation) > 2):

@@ -10,13 +10,19 @@ if(not CLIENT.collection_exists(collection_name=COLLECTION)):
         vectors_config={"fast-bge-small-en": VectorParams(size=384, distance=Distance.COSINE)}
     )
 
-def getRAG(input, collection=COLLECTION, limit=10):
+def getRAG(input, collection=COLLECTION, limit=10, score=0):
     search_result = CLIENT.query(
         collection_name=collection,
         query_text=input,
         limit=limit
     )
-    return search_result
+
+    filtered_result = [
+        response
+        for response in search_result if response.score >= score
+    ]
+
+    return filtered_result
 
 def getAllDataPoints(collection=COLLECTION):
     dataPoints = []
