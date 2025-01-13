@@ -52,6 +52,16 @@ def addData(document, answer):
         metadata=[{ "query": answer }]
     )
 
+def editData(id, document, answer):
+    return CLIENT.overwrite_payload(
+        collection_name=COLLECTION,
+        payload={
+            "document": document,
+            "query": answer
+        },
+        points=PointIdsList(points=[id])        
+    )
+
 def removeData(id):
     return CLIENT.delete(
         collection_name=COLLECTION,

@@ -85,3 +85,17 @@ async def removeData(data : dataParams):
         return status
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+class dataParams(BaseModel):
+    id: str
+    query: str
+    answer: str
+
+@app.post('/editData')
+async def editData(data : dataParams):
+    try:
+        status = RAG.editData(data.id, data.query, data.answer)
+        return status
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
