@@ -1,15 +1,37 @@
+from functools import wraps
+
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance, PointIdsList
 
 COLLECTION = "SQL"
-CLIENT = QdrantClient(host='localhost', port=6333) 
 
-if(not CLIENT.collection_exists(collection_name=COLLECTION)):
+CLIENT = False
+try:
+    initClient = QdrantClient(host='localhost', port=6333)
+    initClient.http.ping()
+
+    CLIENT = initClient
+except Exception as e:
+    pass
+
+# Decorator
+def require_qdrant(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not CLIENT:
+            return [] 
+        
+        return func(*args, **kwargs)
+    return wrapper
+
+
+if(CLIENT and not CLIENT.collection_exists(collection_name=COLLECTION)):
     CLIENT.create_collection(
         collection_name=COLLECTION,
         vectors_config={"fast-bge-small-en": VectorParams(size=384, distance=Distance.COSINE)}
     )
 
+@require_qdrant
 def getRAG(input, collection=COLLECTION, limit=10, score=0):
     search_result = CLIENT.query(
         collection_name=collection,
@@ -24,6 +46,7 @@ def getRAG(input, collection=COLLECTION, limit=10, score=0):
 
     return filtered_result
 
+@require_qdrant
 def getAllDataPoints(collection=COLLECTION):
     dataPoints = []
 
@@ -45,6 +68,7 @@ def getAllDataPoints(collection=COLLECTION):
     
     return dataPoints
 
+@require_qdrant
 def addData(document, answer):
     return CLIENT.add(
         collection_name=COLLECTION,
@@ -52,6 +76,7 @@ def addData(document, answer):
         metadata=[{ "query": answer }]
     )
 
+@require_qdrant
 def editData(id, document, answer):
     return CLIENT.overwrite_payload(
         collection_name=COLLECTION,
@@ -62,6 +87,7 @@ def editData(id, document, answer):
         points=PointIdsList(points=[id])        
     )
 
+@require_qdrant
 def removeData(id):
     return CLIENT.delete(
         collection_name=COLLECTION,
