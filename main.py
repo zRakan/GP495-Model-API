@@ -1,5 +1,10 @@
 from fastapi import FastAPI, HTTPException
 
+# Load dotenv
+from dotenv import load_dotenv
+load_dotenv()
+
+
 from utils import database
 from utils import Agent
 from utils import RAG

@@ -1,3 +1,5 @@
+import os
+
 import pymysql.cursors
 import re
 import sqlparse
@@ -5,13 +7,17 @@ import sqlparse
 connection = None
 
 try:
-    connection = pymysql.connect(
-        host='localhost',
-        user='root',
-        password='root',
-        database='hospital',
-        cursorclass=pymysql.cursors.DictCursor
-    )
+    args = {
+        'host': os.getenv('DB_HOST') or "localhost",
+        'port': int(os.getenv('DB_PORT') or "3306"),
+        
+        'user': os.getenv('DB_USER') or "root",
+        'password': os.getenv("DB_PASSWORD"),
+        
+        'database': os.getenv('DB_NAME')
+    }
+
+    connection = pymysql.connect(**{ k: v for k,v in args.items() if v is not None or v != "" })
 except pymysql.Error as err:
     raise Exception(err)
 

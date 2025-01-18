@@ -1,3 +1,5 @@
+import os
+
 from functools import wraps
 
 from qdrant_client import QdrantClient
@@ -7,7 +9,7 @@ COLLECTION = "SQL"
 
 CLIENT = False
 try:
-    initClient = QdrantClient(host="localhost", port="6333")
+    initClient = QdrantClient(host=os.getenv('QDRANT_HOST'), port=os.getenv('QDRANT_PORT'))
     
     if(not initClient.collection_exists(collection_name=COLLECTION)):
         initClient.create_collection(
