@@ -35,17 +35,6 @@ def generateQuestions(schema):
     except Exception as e:
         raise Exception(f"Llama model error: {str(e)}")
     
-def rewriteQuestion(previous, current):
-    """
-    Rewrite the previous question in the conversation history based on the current question.
-    """
-
-    # Use the LlamaModel to rewrite the previous question
-    try:
-        model = GroqClient(model_name="llama-3.1-8b-instant")
-
-        rewritten_question = model.rewrite_question(previous, current)
-        return rewritten_question
     except Exception as e:
         raise Exception(f"Error rewriting previous question: {str(e)}")
 
@@ -116,20 +105,6 @@ def sendPrompt(conversation, prompt):
         # Initial interaction
         if(len(conversation) == 0):
             conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG=listIt(getRAG(prompt, score=0.85))) })
-
-        # Re-writing user's message (if applicable)
-        if(len(conversation) > 2):
-            previousPrompt = None
-            
-            for message in reversed(conversation):
-                if('type' in message): continue # Ignore non-text messages
-
-                if(message['role'] == 'user'):
-                    previousPrompt = message['content']
-                    break
-
-            if(previousPrompt is not None):
-                prompt = rewriteQuestion(previousPrompt, prompt)
 
         # Send user's message
         conversation.append({ 'role': 'user', 'content': prompt })

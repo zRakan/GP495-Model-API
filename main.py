@@ -23,18 +23,6 @@ async def sendMessage(message: messageSend):
         return Agent.sendPrompt(conversation=message.history, prompt=message.message)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
-class messageRewrite(BaseModel):
-    previous: str
-    current: str
-
-@app.post('/rewriteMessage')
-async def rewriteMessage(message: messageRewrite):
-    try:
-        return Agent.rewriteQuestion(message.previous, message.current)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 
 class sqlRewrite(BaseModel):
     input: str
