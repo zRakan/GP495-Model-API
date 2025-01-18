@@ -34,9 +34,6 @@ def generateQuestions(schema):
 
     except Exception as e:
         raise Exception(f"Llama model error: {str(e)}")
-    
-    except Exception as e:
-        raise Exception(f"Error rewriting previous question: {str(e)}")
 
 def sqlSafeExecute(input, query, schema):
     try:
