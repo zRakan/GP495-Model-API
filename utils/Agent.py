@@ -1,3 +1,9 @@
+import os
+
+DEVELOPMENT = os.getenv('DEVELOPMENT') == 'true'
+if(DEVELOPMENT):
+    print("[WARN] Development mode, using Groq as an inference")
+
 from classes.Ollama import OllamaClient
 from classes.Groq import GroqClient
 
@@ -24,7 +30,11 @@ def generateQuestions(schema):
     prompt = SUGGESTION_QUESTIONS.format(schemaText=schema)
 
     try:
-        model = GroqClient(model_name="llama-3.1-8b-instant")
+        if(DEVELOPMENT):
+            model = GroqClient(model_name="llama-3.1-8b-instant")
+        else:
+            model = OllamaClient(model_name="qwen2.5-coder:latest")
+        
         response = model.generate([{ 'role': 'user', 'content': prompt }])
         
         questions = response.split("\n")
@@ -43,8 +53,11 @@ def sqlSafeExecute(input, query, schema):
         result = sqlExecute(query)
         return result, query
     except sqlError as err:
-        model = GroqClient(model_name="llama-3.1-8b-instant")
-        
+        if(DEVELOPMENT):
+            model = GroqClient(model_name="llama-3.1-8b-instant")
+        else:
+            model = OllamaClient(model_name="qwen2.5-coder:latest")
+
         newQuery = model.generate([
             { 'role': 'system', 'content': FIX_SQL.format(input=input, err=err, query=query, schema_data=schema) }
         ])
@@ -58,8 +71,11 @@ def sqlSafeExecute(input, query, schema):
 from string import Template
 def generatePlotly(df, query):
     try:
-        model = GroqClient(model_name="llama-3.1-8b-instant")
-        
+        if(DEVELOPMENT):
+            model = GroqClient(model_name="llama-3.1-8b-instant")
+        else:
+            model = OllamaClient(model_name="qwen2.5-coder:latest")
+
         plotlyJSON = model.generate([
             { 'role': 'system', 'content': Template(PLOTLY_DATAPOINTS).substitute(df=df, query=query) }
         ])
@@ -96,7 +112,11 @@ def sendPrompt(conversation, prompt):
     try:
         sqlSchema = extractSchema()
 
-        model = GroqClient(model_name="llama-3.1-8b-instant")
+        if(DEVELOPMENT):
+            model = GroqClient(model_name="llama-3.1-8b-instant")
+        else:
+            model = OllamaClient(model_name="qwen2.5-coder:latest")
+
         print(f"""Convo: {len(conversation)}""")
 
         # Initial interaction
