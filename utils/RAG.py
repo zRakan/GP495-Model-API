@@ -7,11 +7,17 @@ COLLECTION = "SQL"
 
 CLIENT = False
 try:
-    initClient = QdrantClient(host='localhost', port=6333)
-    initClient.http.ping()
+    initClient = QdrantClient(host="localhost", port="6333")
+    
+    if(not initClient.collection_exists(collection_name=COLLECTION)):
+        initClient.create_collection(
+            collection_name=COLLECTION,
+            vectors_config={"fast-bge-small-en": VectorParams(size=384, distance=Distance.COSINE)}
+        )
 
     CLIENT = initClient
 except Exception as e:
+    print("[WARN] Qdrant is not running")
     pass
 
 # Decorator
@@ -23,13 +29,6 @@ def require_qdrant(func):
         
         return func(*args, **kwargs)
     return wrapper
-
-
-if(CLIENT and not CLIENT.collection_exists(collection_name=COLLECTION)):
-    CLIENT.create_collection(
-        collection_name=COLLECTION,
-        vectors_config={"fast-bge-small-en": VectorParams(size=384, distance=Distance.COSINE)}
-    )
 
 @require_qdrant
 def getRAG(input, collection=COLLECTION, limit=10, score=0):
