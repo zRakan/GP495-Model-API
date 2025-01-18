@@ -17,7 +17,7 @@ try:
         'database': os.getenv('DB_NAME')
     }
 
-    connection = pymysql.connect(**{ k: v for k,v in args.items() if v is not None or v != "" })
+    connection = pymysql.connect(**{ k: v for k,v in args.items() if v is not None or v != "" }, cursorclass=pymysql.cursors.DictCursor)
 except pymysql.Error as err:
     raise Exception(err)
 
