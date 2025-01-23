@@ -47,7 +47,10 @@ def generateQuestions(schema):
 
 def sqlSafeExecute(input, query, schema):
     try:
+        print(f"SQL generated: {query}")
+
         if(not validateSQL(query)):
+            print("[DEBUG] Generated SQL is not SELECT")
             raise sqlError('Not `SELECT` SQL')
 
         result = sqlExecute(query)

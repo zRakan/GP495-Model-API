@@ -66,4 +66,5 @@ def sqlExecute(query):
 
         return values
     except pymysql.Error as err:
+        print("[DEBUG] Generated SQL is failed to execute")
         raise pymysql.Error(err)
