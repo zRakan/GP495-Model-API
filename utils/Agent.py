@@ -175,11 +175,11 @@ def sendPrompt(conversation, prompt):
         conversation.append({ 'role': 'assistant', 'content': sqlQuery })
 
         # Generate Markdown
-        sqlMarkdown = pd.DataFrame(sqlResult)
-        conversation.append({ 'type': 'Markdown', 'role': 'assistant', 'content': sqlMarkdown.to_markdown(index=False) })
+        sqlMarkdown = pd.DataFrame(sqlResult).to_markdown(index=False, numalign=None, stralign=None)
+        conversation.append({ 'type': 'Markdown', 'role': 'assistant', 'content': sqlMarkdown })
 
         # Generate Plotly
-        sqlPlotly = generatePlotly(sqlMarkdown.to_markdown(index=False, numalign=None, stralign=None), prompt)
+        sqlPlotly = generatePlotly(sqlMarkdown, prompt)
 
         for plot in sqlPlotly:
             conversation.append({ 'type': 'Plotly', 'role': 'assistant', 'content': plot })
