@@ -36,6 +36,10 @@ FIX_SQL = '''You are a MySQL expert. Please help to Fix this given SQL query to 
 - Don't answer any question that not related to the schema context.
 - If the user question may have mutiple queries write it as one query user "union" or what you need.'''
 
+REWRITE_QUESTION = '''You're an AI agent that rewrite questions by combining the previous question and the current question into a meaningful question if they are related, if not, return the current question.
+
+Provide ONLY the rewritten question as the output, without any explanation or additional text.'''
+
 SUGGESTION_QUESTIONS = """You are an expert SQL assistant. Based on the following database schema, generate 4 meaningful SQL questions that a user might ask. 
 The questions should be related to retrieving data, aggregating information, or analyzing relationships between tables.
 

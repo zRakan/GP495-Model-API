@@ -7,7 +7,7 @@ if(DEVELOPMENT):
 from classes.Ollama import OllamaClient
 from classes.Groq import GroqClient
 
-from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL, PLOTLY_DATAPOINTS
+from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL, PLOTLY_DATAPOINTS, REWRITE_QUESTION
 from utils.database import validateSQL, sqlExecute, extractSchema
 from utils.extractors import sqlExtractor, jsonExtractor
 
@@ -44,6 +44,31 @@ def generateQuestions(schema):
 
     except Exception as e:
         raise Exception(f"Llama model error: {str(e)}")
+    
+def rewriteQuestion(previous, current):
+    """
+    Rewrite the previous question in the conversation history based on the current question.
+    """
+    try:
+        if(DEVELOPMENT):
+            model = GroqClient(model_name="llama-3.1-8b-instant")
+        else:
+            model = OllamaClient(model_name="qwen2.5-coder:latest")
+
+        prompt = [
+            { 'role': 'system', 'content': REWRITE_QUESTION },
+
+            {
+                'role': 'user',
+                'content': f'''Previous Question: {previous}
+Current Question: {current}'''
+            }
+        ]
+
+        rewritten_question = model.generate(prompt)
+        return rewritten_question
+    except Exception as e:
+        raise Exception(f"Error rewriting previous question: {str(e)}")
 
 def sqlSafeExecute(input, query, schema):
     try:
@@ -125,6 +150,19 @@ def sendPrompt(conversation, prompt):
         # Initial interaction
         if(len(conversation) == 0):
             conversation.append({ 'role': 'system', 'content': CHAT_SYSTEM.format(schemaData=sqlSchema, RAG=listIt(getRAG(prompt, score=0.85))) })
+
+        # Re-writing user's message (if applicable)
+        if(len(conversation) > 2):
+            previousPrompt = None
+            
+            for message in reversed(conversation):
+                if('type' in message): continue # Ignore non-text messages
+                if(message['role'] == 'user'):
+                    previousPrompt = message['content']
+                    break
+            if(previousPrompt is not None):
+                prompt = rewriteQuestion(previousPrompt, prompt)
+                print(f"Rewritten to: {prompt}")
 
         # Send user's message
         conversation.append({ 'role': 'user', 'content': prompt })
