@@ -62,63 +62,17 @@ ${df}
 **Take this as an example for the output depending on <user_question> and choose the best one:**
 - Bar Plot:
 ```json
-{
-  "data": [{
-    "x": ["A", "B", "C", "D"],
-    "y": [10, 20, 30, 40],
-    "type": "bar",
-    "marker": {
-      "color": "orange"
-    }
-  }],
-  "layout": {
-    "title": "Bar Plot Example",
-    "xaxis": {
-      "title": "Categories"
-    },
-    "yaxis": {
-      "title": "Values"
-    }
-  }
-}
+{"data":[{"x":["A","B","C","D"],"y":[10,20,30,40],"type":"bar","marker":{"color":"orange"}}],"layout":{"title":"Bar Plot","xaxis":{"title":"Categories"},"yaxis":{"title":"Values"}}}
 ```
 
 - Scatter Plot:
 ```json
-{
-  "data": [
-    {
-      "x": [1, 2, 3, 4, 5],
-      "y": [2, 4, 6, 8, 10],
-      "type": "scatter",
-      "mode": "lines",
-      "line": { "color": "blue" }
-    }
-  ],
-  
-  "layout": {
-    "title": "Line Plot Example",
-    "xaxis": { "title": "X-axis" },
-    "yaxis": { "title": "Y-axis" }
-  }
-}
+{"data":[{"x":[1,2,3,4,5],"y":[2,4,6,8,10],"type":"scatter","mode":"lines","line":{"color":"blue"}}],"layout":{"title":"Line Plot","xaxis":{"title":"X-axis"},"yaxis":{"title":"Y-axis"}}}
 ```
 
 - Pie Chart:
 ```json
-{
-  "data": [
-    {
-      values: [19, 26, 55],
-      labels: ['Residential', 'Non-Residential', 'Utility'],
-      type: 'pie'
-    }
-  ],
-  
-  "layout": {
-    "title": "Line Plot Example",
-  }
-}
+{"data":[{values:[19,26,55],labels:['Residential','Non-Residential','Utility'],type:'pie'}],"layout":{"title":"Line Plot"}}
 ```
 
 
