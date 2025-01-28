@@ -166,7 +166,7 @@ def sendPrompt(conversation, prompt):
 
         # Send user's message
         conversation.append({ 'role': 'user', 'content': prompt })
-        response = model.generate(conversation)
+        response = sqlExtractor(model.generate(conversation))
 
         # Check for SQL
         sqlResult, sqlQuery = sqlSafeExecute(prompt, response, sqlSchema)
