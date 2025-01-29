@@ -4,6 +4,10 @@ from fastapi import FastAPI, HTTPException
 from dotenv import load_dotenv
 load_dotenv()
 
+# Redis
+import redis
+import jsonpickle
+client = redis.Redis('localhost', port=6379)
 
 from utils import database
 from utils import Agent
@@ -49,9 +53,15 @@ async def generate_questions():
 @app.get('/dataList')
 async def getDataList():
     try:
-        dataPoints = RAG.getAllDataPoints()
+        if(client.exists('Mostaelim:RAG:list')):
+            dataPoints = jsonpickle.decode(client.get('Mostaelim:RAG:list'))
+        else:
+            dataPoints = RAG.getAllDataPoints()
+            client.set('Mostaelim:RAG:list', jsonpickle.encode(dataPoints)) # Cache it
+
         return {"data": dataPoints}
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -62,6 +72,7 @@ class dataParams(BaseModel):
 @app.post('/addData')
 async def addData(data : dataParams):
     try:
+        client.delete('Mostaelim:RAG:list') # Remove from cache
         id = RAG.addData(data.question, data.answer)
         return { "id": id }
     except Exception as e:
@@ -74,6 +85,7 @@ class dataParams(BaseModel):
 @app.post('/removeData')
 async def removeData(data : dataParams):
     try:
+        client.delete('Mostaelim:RAG:list') # Remove from cache
         status = RAG.removeData(data.id)
         return status
     except Exception as e:
@@ -88,6 +100,7 @@ class dataParams(BaseModel):
 @app.post('/editData')
 async def editData(data : dataParams):
     try:
+        client.delete('Mostaelim:RAG:list') # Remove from cache
         status = RAG.editData(data.id, data.query, data.answer)
         return status
     except Exception as e:
