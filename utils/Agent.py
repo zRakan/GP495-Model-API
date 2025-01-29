@@ -7,7 +7,7 @@ if(DEVELOPMENT):
 from classes.Ollama import OllamaClient
 from classes.Groq import GroqClient
 
-from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL, PLOTLY_DATAPOINTS, REWRITE_QUESTION
+from utils.prompts import CHAT_SYSTEM, SUGGESTION_QUESTIONS, FIX_SQL, PLOTLY_DATAPOINTS, REWRITE_QUESTION, SUMMARIZE_DATA
 from utils.database import validateSQL, sqlExecute, extractSchema
 from utils.extractors import sqlExtractor, jsonExtractor
 
@@ -112,6 +112,21 @@ def generatePlotly(df, query):
     except Exception as err:
         print(err)
         return None
+    
+def summarizeData(data, query):
+    try:
+        if(DEVELOPMENT):
+            model = GroqClient(model_name="llama-3.1-8b-instant")
+        else:
+            model = OllamaClient(model_name="qwen2.5-coder:latest")
+
+        summarized = model.generate([
+            { 'role': 'system', 'content': Template(SUMMARIZE_DATA).substitute(query=query, data=data) }
+        ])
+
+        return summarized
+    except Exception as err:
+        return None
 
 def markdownTable(RAG):
     rows = [
@@ -183,6 +198,9 @@ def sendPrompt(conversation, prompt):
 
         for plot in sqlPlotly:
             conversation.append({ 'type': 'Plotly', 'role': 'assistant', 'content': plot })
+
+        # Generate summary
+        conversation.append({ 'type': 'Analyze', 'role': 'assistant', 'content': summarizeData(sqlMarkdown, prompt) })
 
         return { 'conversation': conversation }
     except Exception as e:

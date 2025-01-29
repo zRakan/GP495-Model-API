@@ -85,3 +85,12 @@ Make sure it only contains valid JSON.
 Don't put comments in codeblock.
 Make sure anything related to ID should be a string.
 Make sure to put ```json``` codeblock for each JSON."""
+
+
+SUMMARIZE_DATA = """You're an AI Agent that summarize <SQL_DATA> based on <USER_QUESTION> in a single paragraph.
+
+<USER_QUESTION>${query}</USER_QUESTION>
+
+<SQL_DATA>
+${data}
+</SQL_DATA>"""
