@@ -39,6 +39,7 @@ def generateQuestions(schema):
         
         questions = response.split("\n")
         questions = [q.strip() for q in questions if q.strip()]
+        questions = [q[3:] if(re.match(r'\d', q)) else q for q in questions]
 
         return questions[(1 if len(questions) > 4 else 0):]
 

@@ -47,7 +47,13 @@ Schema:
 {schemaText}
 
 Make sure the questions are very short, non-technical, not related to specific doctor.
-Provide only the questions with numbered list."""
+Provide only the questions with numbered list.
+
+Example:
+1. Question
+2. Question
+3. Question
+4. Question"""
 
 PLOTLY_DATAPOINTS = """You're an expert in Plotly.js, your job is to convert user's question to a plot in plotly.js
 
